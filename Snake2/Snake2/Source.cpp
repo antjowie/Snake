@@ -12,8 +12,8 @@
 enum class moveset { up, down, left, right, neutral }direction;
 
 struct entity {
-	int x;
-	int y;
+	int x = 1;
+	int y = 1;
 	entity *next = nullptr;
 }*list, *old;
 
@@ -28,13 +28,11 @@ void printMatrix();
 void spawnFruit(int &counter, entity *snake, entity *fruit);
 void checkFruit(entity *snake, entity *fruit);
 void addSnake(entity *snake);
+void followSnake(entity *snake);
 
 int main() {
 	srand(time(0));
 	entity *snake = new entity;
-	list = snake;
-	list->next = new entity;
-	 
 	entity *fruit = new entity;
 	int counter = fruitRate;
 
@@ -43,10 +41,10 @@ int main() {
 		printMatrix();
 		if (logic(snake, fruit) == false)
 			alive = false;
-		//spawnFruit(counter, snake, fruit);
-		//checkFruit(snake, fruit);
+		spawnFruit(counter, snake, fruit);
 	}
 	std::cout << "You died!\n";
+	std::cin.ignore();
 	return 0;
 }
 
@@ -60,7 +58,7 @@ void resetMatrix(entity *snake) {
 		for (int y = 0; y < length; y++) {
 
 			// Fills matrix with dots
-			matrix[x][y] = '.';
+			matrix[x][y] = ' ';
 
 			// Adds borders
 			if (x == 0)
@@ -100,41 +98,24 @@ void printMatrix() {
 void insertEntity(char value, entity *snake, entity *fruit) {
 	
 	// List snake
-	if (snake->next != nullptr && value != 'F') {
+	if (value != 'F')
 		list = snake->next;
-		old = snake;
-		while (list != nullptr) {
-			if (value == 'O') {
-				sleep;
-				std::cout << "list x = " << list->x << '\n';
-				std::cout << "list y = " << list->y << '\n';
-				std::cout << "old x = " << old->x << '\n';
-				std::cout << "old y = " << old->y << '\n';
-				std::cout << "snake x = " << snake->x << '\n';
-				std::cout << "snake y = " << snake->y << '\n';
-				list->x = old->x;
-				list->y = old->y;
-			}
-			matrix[list->x][list->y] = value;
-			old = old->next;
-			list = list->next;
-		}
-	}
 	
 	// List fruit
-	else if (fruit->next != nullptr && value == 'F') {
+	else if (value != 'o')
 		list = fruit->next;
-		while (list != nullptr) {
+
+	while (list != nullptr){
 			matrix[list->x][list->y] = value;
 			list = list->next;
 		}
-	}
 }
 
 bool logic(entity *snake, entity *fruit) {
 
 	// Remove outdated location
-	insertEntity('.', snake, fruit);
+	insertEntity(' ', snake, fruit);
+	matrix[snake->x][snake->y] = ' ';
 
 	do {
 		// Checks for user input
@@ -145,7 +126,12 @@ bool logic(entity *snake, entity *fruit) {
 			std::cout << "Game paused...\nMove to continue.\n";
 			direction = input();
 		}
+
+		//Allows for an pause function
 	} while (direction == moveset::neutral);
+
+	// Makes snake follow eachother
+	followSnake(snake);
 
 	// Moveset
 	switch (direction) {
@@ -163,11 +149,11 @@ bool logic(entity *snake, entity *fruit) {
 		break;
 	}
 
+	// Checks for fruit because fruit != ' '
+	checkFruit(snake, fruit);
+
 	// Checks for possible death
-	if (matrix[snake->x][snake->y] == 'O' ||
-		matrix[snake->x][snake->y] == '|' ||
-		matrix[snake->x][snake->y] == '=' ||
-		matrix[snake->x][snake->y] == '_')
+	if (matrix[snake->x][snake->y] != ' ')
 		return false;
 
 	// Checks for lose by 4 fruits
@@ -179,11 +165,11 @@ bool logic(entity *snake, entity *fruit) {
 	}
 	
 	// Inserts entities coords into matrix
-	insertEntity('O', snake, fruit);
+	insertEntity('o', snake, fruit);
 	insertEntity('F', snake, fruit);
 
 	// Inserts player head in matrix
-	//matrix[snake->x][snake->y] = 'G';
+	matrix[snake->x][snake->y] = 'O';
 	return true;
 }
 
@@ -220,21 +206,9 @@ void spawnFruit(int &counter, entity *snake, entity *fruit) {
 		tempx++;
 		tempy++;
 
-		// Checks if fruit didn't spawn on snake
-		list = snake;
-		while (list != nullptr) {
-			if (tempx == list->x && tempy == list->y)
-				spawnFruit(counter, snake, fruit);
-			list = list->next;
-		}
-		
-		// Checks if fruit didn't spawn on fruit
-		list = fruit->next;
-		while (list != nullptr) {
-			if (tempx == list->x && tempy == list->y)
-				spawnFruit(counter, snake, fruit);
-			list = list->next;
-		}
+		// Checks if fruit didn't spawn on something
+		if (matrix[tempx][tempy] != ' ')
+			spawnFruit(counter, snake, fruit);
 
 		// Inserts cords to latest fruit
 		list = fruit;
@@ -247,9 +221,7 @@ void spawnFruit(int &counter, entity *snake, entity *fruit) {
 
 		// Inserts fruit
 		insertEntity('F', snake, fruit);
-		std::cout << tempx << '\n';
-		std::cout << tempy << '\n';
-
+		
 		// Resets counter for next fruit
 		counter = fruitRate;
 	}
@@ -262,6 +234,10 @@ void checkFruit(entity *snake, entity *fruit) {
 
 			// If fruit and playerhead coords match
 			if (list->next->x == snake->x && list->next->y == snake->y) {
+
+				// Removes graphical indicator
+				matrix[list->next->x][list->next->y] = ' ';
+				std::cin.ignore();
 
 				// Removes food
 				old = list;
@@ -284,4 +260,21 @@ void addSnake(entity *snake) {
 	while (list->next != nullptr)
 		list = list->next;
 	list->next = new entity;
+}
+
+void followSnake(entity *snake) {
+	if (snake->next != nullptr) {
+		list = snake;
+			int tempx = list->x;
+			int tempy = list->y;
+		while (list->next != nullptr) {
+			int tempx1 = list->next->x;
+			int tempy1 = list->next->y;
+			list->next->x = tempx;
+			list->next->y = tempy;
+			list = list->next;
+			tempx = tempx1;
+			tempy = tempy1;
+		}
+	}
 }
