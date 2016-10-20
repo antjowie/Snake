@@ -158,8 +158,17 @@ bool logic(entity *snake, entity *fruit) {
 	checkFruit(snake, fruit);
 
 	// Checks for possible death
-	if (matrix[snake->x][snake->y] != ' ')
+	if (matrix[snake->x][snake->y] != ' ') {
+		if (matrix[snake->x][snake->y] == '|' ||
+			matrix[snake->x][snake->y] == '=' ||
+			matrix[snake->x][snake->y] == '_')
+			std::cout << "You crashed into a wall!\n";
+		if (matrix[snake->x][snake->y] == 'o')
+			std::cout << "You crashed into yourself!";
+		else
+			std::cout << "Error in death messages";
 		return false;
+	}
 
 	// Checks for lose by 4 fruits
 	list = fruit;
@@ -213,8 +222,7 @@ moveset input() {
 		else
 			return moveset::left;
 		break;
-	case 'p':
-	case 'P':
+	default:
 		return moveset::neutral;
 		break;
 	}

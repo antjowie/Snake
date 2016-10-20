@@ -1,5 +1,4 @@
 ﻿  Source.cpp
 c:\users\obsidian\documents\c++ projects\old games remade\snake2\snake2\source.cpp(34): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
-c:\users\obsidian\documents\c++ projects\old games remade\snake2\snake2\source.cpp(205): warning C4715: 'input': not all control paths return a value
   Snake2.vcxproj -> C:\Users\Obsidian\Documents\C++ projects\Old games remade\Snake2\Debug\Snake2.exe
   Snake2.vcxproj -> C:\Users\Obsidian\Documents\C++ projects\Old games remade\Snake2\Debug\Snake2.pdb (Full PDB)
