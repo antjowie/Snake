@@ -29,6 +29,7 @@ void spawnFruit(int &counter, entity *snake, entity *fruit);
 void checkFruit(entity *snake, entity *fruit);
 void addSnake(entity *snake);
 void followSnake(entity *snake);
+int deathMessage(entity *snake);
 
 int main() {
 	srand(time(0));
@@ -43,8 +44,27 @@ int main() {
 			alive = false;
 		spawnFruit(counter, snake, fruit);
 	}
+
+	// Because the value will be updated with X. death message must be determined before printing matrix
+	int message = deathMessage(snake);
+
+	matrix[snake->x][snake->y] = 'X';
 	printMatrix();
-	std::cout << "You died!\n";
+	
+	// Deaths messages
+	switch (message)
+	{
+	case 1:
+		std::cout << "You've crashed into a wall!\n";
+		break;
+	case 2:
+		std::cout << "You've crashed into yourself!\n";
+		break;
+	default:
+		std::cout << "Error in death messages.\nsnake x: " << snake->x << "\tsnake y: " << snake->y;
+		break;
+	}
+
 	std::cin.ignore();
 	return 0;
 }
@@ -158,17 +178,8 @@ bool logic(entity *snake, entity *fruit) {
 	checkFruit(snake, fruit);
 
 	// Checks for possible death
-	if (matrix[snake->x][snake->y] != ' ') {
-		if (matrix[snake->x][snake->y] == '|' ||
-			matrix[snake->x][snake->y] == '=' ||
-			matrix[snake->x][snake->y] == '_')
-			std::cout << "You crashed into a wall!\n";
-		if (matrix[snake->x][snake->y] == 'o')
-			std::cout << "You crashed into yourself!";
-		else
-			std::cout << "Error in death messages";
+	if (matrix[snake->x][snake->y] != ' ')
 		return false;
-	}
 
 	// Checks for lose by 4 fruits
 	list = fruit;
@@ -325,4 +336,14 @@ void followSnake(entity *snake) {
 			tempy = tempy1;
 		}
 	}
+}
+
+int deathMessage(entity *snake){
+	if (matrix[snake->x][snake->y] == '|' ||
+		matrix[snake->x][snake->y] == '=' ||
+		matrix[snake->x][snake->y] == '_')
+		return 1;
+	else if (matrix[snake->x][snake->y] == 'o')
+		return 2;
+	return 0;
 }
