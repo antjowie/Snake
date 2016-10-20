@@ -27,3 +27,8 @@
 *.exe
 *.out
 *.app
+
+# Added manually
+*.VC*
+*.vs
+*.sln

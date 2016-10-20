@@ -12,10 +12,10 @@
 enum class moveset { up, down, left, right, neutral }direction;
 
 struct entity {
-	int x = 1;
-	int y = 1;
+	int x;
+	int y;
 	entity *next = nullptr;
-}*list, *old;
+}*list;
 
 char matrix[width][length];
 bool alive;
@@ -43,6 +43,7 @@ int main() {
 			alive = false;
 		spawnFruit(counter, snake, fruit);
 	}
+	printMatrix();
 	std::cout << "You died!\n";
 	std::cin.ignore();
 	return 0;
@@ -123,11 +124,11 @@ bool logic(entity *snake, entity *fruit) {
 			direction = input();
 
 		if (direction == moveset::neutral) {
-			std::cout << "Game paused...\nMove to continue.\n";
+			std::cout << "\rGame paused, move to continue.";
 			direction = input();
 		}
 
-		//Allows for an pause function
+		// Allows for an pause function
 	} while (direction == moveset::neutral);
 
 	// Makes snake follow eachother
@@ -149,6 +150,10 @@ bool logic(entity *snake, entity *fruit) {
 		break;
 	}
 
+	// Inserts entities cords into matrix
+	insertEntity('o', snake, fruit);
+	insertEntity('F', snake, fruit);
+
 	// Checks for fruit because fruit != ' '
 	checkFruit(snake, fruit);
 
@@ -163,10 +168,6 @@ bool logic(entity *snake, entity *fruit) {
 			return false;
 		list = list->next;
 	}
-	
-	// Inserts entities coords into matrix
-	insertEntity('o', snake, fruit);
-	insertEntity('F', snake, fruit);
 
 	// Inserts player head in matrix
 	matrix[snake->x][snake->y] = 'O';
@@ -174,25 +175,46 @@ bool logic(entity *snake, entity *fruit) {
 }
 
 moveset input() {
+	/*
+	the if-else statements
+	are to secure the player
+	doesn't run into the snake
+	by moving in the oposite
+	direction.
+	*/
+	
 	switch (_getch())
 	{
 	case 'w':
 	case 'W':
-		return moveset::up;
+		if (direction != moveset::down)
+			return moveset::up;
+		else
+			return moveset::down;
 		break;
 	case 'a':
 	case 'A':
-		return moveset::left;
+		if (direction != moveset::right)
+			return moveset::left;
+		else
+			return moveset::right;
 		break;
 	case 's':
 	case 'S':
-		return moveset::down;
+		if (direction != moveset::up)
+			return moveset::down;
+		else
+			return moveset::up;
 		break;
 	case 'd':
 	case 'D':
-		return moveset::right;
+		if (direction != moveset::left)
+			return moveset::right;
+		else
+			return moveset::left;
 		break;
-	default:
+	case 'p':
+	case 'P':
 		return moveset::neutral;
 		break;
 	}
@@ -232,19 +254,24 @@ void checkFruit(entity *snake, entity *fruit) {
 	if (fruit->next != nullptr)
 		for (list = fruit; list->next != nullptr; list = list->next) {
 
-			// If fruit and playerhead coords match
+			// If fruit and playerhead cords match
 			if (list->next->x == snake->x && list->next->y == snake->y) {
 
 				// Removes graphical indicator
 				matrix[list->next->x][list->next->y] = ' ';
-				std::cin.ignore();
 
 				// Removes food
-				old = list;
-				if (list->next->next != nullptr)
-					list = list->next->next;
-				old->next = nullptr;
-				delete old->next;
+				// Checks if its last fruit
+				if (list->next->next != nullptr) {
+					entity *temp = list->next->next;
+					list->next = nullptr;
+					delete(list->next);
+					list->next = temp;
+				}
+				else {
+				list->next = nullptr;
+				delete(list->next);
+				}
 				
 				// Adds new snake part
 				addSnake(snake);
@@ -260,19 +287,32 @@ void addSnake(entity *snake) {
 	while (list->next != nullptr)
 		list = list->next;
 	list->next = new entity;
+	
+	// Gives entity same cords a head
+	list = list->next;
+	list->x = snake->x;
+	list->y = snake->y;
 }
 
 void followSnake(entity *snake) {
 	if (snake->next != nullptr) {
 		list = snake;
+
+			// Copies the location of the old snake cords
 			int tempx = list->x;
 			int tempy = list->y;
 		while (list->next != nullptr) {
+
+			// Makes a copy of the next snake cords
 			int tempx1 = list->next->x;
 			int tempy1 = list->next->y;
+
+			// Moves the next snake to the old snake's position
 			list->next->x = tempx;
 			list->next->y = tempy;
 			list = list->next;
+
+			// Copies the old snake cords
 			tempx = tempx1;
 			tempy = tempy1;
 		}
