@@ -32,3 +32,4 @@
 *.VC*
 *.vs
 *.sln
+Debug/*
