@@ -1,2 +1,2 @@
 # Snake
-My attempt to recreate Snake
+My attempt to recreate old games
