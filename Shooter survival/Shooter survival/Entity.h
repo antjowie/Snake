@@ -2,20 +2,21 @@
 #ifndef ENTITY_H_INCLUDED
 #define ENTITY_H_INCLUDED
 
-enum eDir { STOP, UP, DOWN, LEFT, RIGHT };
-
+enum eEntityDir { STOP, UP, DOWN, LEFT, RIGHT };
+enum eStatus { DEAD, ALIVE };
 class cEntity {
 protected:
 	int x, y;
 	int originalX, originalY;
 	int HP;
-	eDir direction;
+	eStatus status;
+	eEntityDir direction;
 public:
 	cEntity(int paramX, int paramY);
-
+	cEntity();
 	// Main loop
 	// The first function is for player, the second for enemy
-	void ChangeDir(eDir newDir);
+	void ChangeDir(eEntityDir newDir);
 	void ChangeDir(cEntity *player);
 	void Move();
 	void LowerHP();
@@ -25,7 +26,7 @@ public:
 	inline int getX();
 	inline int getY();
 	inline int getHP();
-	eDir getDir();
+	eEntityDir getDir();
 };
 
 class cPlayer : public cEntity {
@@ -36,7 +37,8 @@ public:
 
 class cEnemy : public cEntity {
 public:
-	cEnemy(int paramX, int paramY);
+	cEnemy();
+	void Reset();
 };
 
 #endif // !ENTITY_H

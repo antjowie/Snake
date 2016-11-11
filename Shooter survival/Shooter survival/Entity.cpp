@@ -6,9 +6,14 @@ cEntity::cEntity(int paramX, int paramY)
 	originalX = paramX; originalY = paramY;
 	direction = STOP;
 	HP = 3;
+	status = ALIVE;
 }
 
-void cEntity::ChangeDir(eDir newDir)
+cEntity::cEntity()
+{
+}
+
+void cEntity::ChangeDir(eEntityDir newDir)
 {
 	direction = newDir;
 }
@@ -75,12 +80,12 @@ inline int cEntity::getHP()
 	return HP;
 }
 
-eDir cEntity::getDir()
+eEntityDir cEntity::getDir()
 {
 	return direction;
 }
 
-cPlayer::cPlayer(int paramX, int paramY): cEntity(paramX,paramY)
+cPlayer::cPlayer(int paramX, int paramY) : cEntity(paramX, paramY)
 {
 }
 
@@ -89,7 +94,12 @@ void cPlayer::Reset()
 	x = originalX; y = originalY;
 }
 
-cEnemy::cEnemy(int paramX, int paramY) : cEntity(paramX,paramY)
+cEnemy::cEnemy()
 {
 	HP = 1;
+}
+
+void cEnemy::Reset()
+{
+	status = DEAD;
 }
