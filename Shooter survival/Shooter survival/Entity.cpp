@@ -65,17 +65,17 @@ void cEntity::LowerHP()
 	HP--;
 }
 
-inline int cEntity::getX()
+const inline int cEntity::getX()
 {
 	return x;
 }
 
-inline int cEntity::getY()
+const inline int cEntity::getY()
 {
 	return y;
 }
 
-inline int cEntity::getHP()
+const inline int cEntity::getHP()
 {
 	return HP;
 }

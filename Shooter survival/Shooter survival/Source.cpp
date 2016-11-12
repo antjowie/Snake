@@ -18,6 +18,7 @@ class cGameManager {
 	cEntity *enemy;
 	cWeapon *weapon;
 	int score;
+	int enemyAmmount;
 public:
 	cGameManager(int paramX, int paramY) {
 		srand(time(NULL));
@@ -30,8 +31,7 @@ public:
 		shootDown = 'k'; shootRight = 'l';
 		reload = 'r'; pause = 'p';
 		player = new cPlayer(paramX / 2, paramY / 2);
-		enemy = new cEnemy[10];
-		weapon = new cFist(999, 1, 1, 1);
+		weapon = new cFist(9999,1,1,1,1,'#');
 	}
 
 	~cGameManager() {
@@ -58,7 +58,13 @@ public:
 				if (x == player->getX() && y == player->getY())
 					std::cout << '\x9D';
 
-				else std::cout << ' ';
+				// Weapon bullets
+				for (int i = 0; i < weapon->getMaxBullet(); ++i)
+				if (x == weapon->getBulletX(i) && y == weapon->getBulletY(i))
+						std::cout << '0';
+				
+				else 
+					std::cout << ' ';
 
 				// Rigth wall
 				if(x == width - 1)
@@ -114,13 +120,16 @@ public:
 		player->Move();
 	}
 	void Logic() {
-	
+		// Checks death of enemy
+
+
 	}
 	void ScoreUp() {
 
 	}
 	void GenerateEnemy(int ammount) {
-
+		enemy = new cEnemy[ammount];
+		enemyAmmount = ammount;
 	}
 	void Start() {
 		while (!quit) {
@@ -152,7 +161,7 @@ public:
 int main() {
 	cGameManager main(30, 15);
 	main.Start();
-
+	
 
 	return 0;
 }

@@ -24,9 +24,9 @@ public:
 	virtual void Reset() = 0;
 
 	// Get functions
-	inline int getX();
-	inline int getY();
-	inline int getHP();
+	const inline int getX();
+	const inline int getY();
+	const inline int getHP();
 	eEntityDir getDir();
 };
 
