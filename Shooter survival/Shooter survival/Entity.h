@@ -4,6 +4,7 @@
 
 enum eEntityDir { STOP, UP, DOWN, LEFT, RIGHT };
 enum eStatus { DEAD, ALIVE };
+
 class cEntity {
 protected:
 	int x, y;

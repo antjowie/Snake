@@ -1,8 +1,13 @@
 ﻿#include <iostream>
 #include <time.h>
+#include <thread>
+#include <chrono>
 #include <conio.h>
 
+#define sleep std::this_thread::sleep_for(std::chrono::milliseconds(50))
+#include "Weapon.h"
 #include "Entity.h"
+
 //#include "Weapon.h"
 
 class cGameManager {
@@ -11,19 +16,23 @@ class cGameManager {
 	bool quit;
 	cEntity *player;
 	cEntity *enemy;
+	cWeapon *weapon;
 	int score;
 public:
 	cGameManager(int paramX, int paramY) {
 		srand(time(NULL));
 		width = paramX; heigth = paramY;
+
+		// Will be controlable from text file
 		up = 'w';	left = 'a';		
 		down = 's';	right = 'd'; 
 		shootUp = 'i';	shootLeft = 'j';
 		shootDown = 'k'; shootRight = 'l';
 		reload = 'r'; pause = 'p';
 		player = new cPlayer(paramX / 2, paramY / 2);
-		enemy = new cEnemy[2];
-		}
+		enemy = new cEnemy[10];
+		weapon = new cFist(999, 1, 1, 1);
+	}
 
 	~cGameManager() {
 		delete player;
@@ -64,8 +73,9 @@ public:
 
 	}
 	void Input() {
-		if (kbhit()) {
-			char current = getch();
+
+		if (_kbhit()) {
+			char current = _getch();
 
 			// Player move
 			if (current == up)
@@ -76,14 +86,35 @@ public:
 				player->ChangeDir(LEFT);
 			if (current == right)
 				player->ChangeDir(RIGHT);
-		
-			// Fire
+
+
+			// Fire weapon
+			
 			if (current == shootUp)
-				weapon->shootDir(UP);
+				weapon->Shoot(player->getX(), player->getY(), BULLETUP);
+			if (current == shootDown)
+				weapon->Shoot(player->getX(), player->getY(), BULLETDOWN);
+			if (current == shootLeft)
+				weapon->Shoot(player->getX(), player->getY(), BULLETLEFT);
+			if (current == shootRight)
+				weapon->Shoot(player->getX(), player->getY(), BULLETRIGHT);
+
+			if (current == reload)
+				weapon->Reload();
+			
+			
+
+			// Misc
+			if (current == pause)
+				Pause();
+
 		}
+		else
+			player->ChangeDir(STOP);	
+		player->Move();
 	}
 	void Logic() {
-
+	
 	}
 	void ScoreUp() {
 
@@ -92,17 +123,35 @@ public:
 
 	}
 	void Start() {
-
+		while (!quit) {
+		Draw();
+		Input();
+		Logic();
+		sleep;
+		}
 	}
 	void Pause() {
-
+		system("cls");
+		// Prints pause in cool format
+		std::cout 
+			<< "\xDB\xDB\xDB\xDB\xDB\xDC  \xDC\xDB\xDB\xDB\xDB\xDB\xDC  \xDB\xDB  \xDB\xDB  \xDB\xDB\xDB\xDB\xDB\xDB  \xDB\xDB\xDB\xDB\xDB\xDB  \xDB\xDB\xDB\xDB\xDB\xDB\xDC\n"
+			<< "\xDB\xDB  \xDB\xDB  \xDB\xDB   \xDB\xDB  \xDB\xDB  \xDB\xDB  \xDB\xDB      \xDB\xDB      \xDB\xDB   \xDB\xDB\n"
+			<< "\xDB\xDB\xDB\xDB\xDB\xDF  \xDB\xDB\xDB\xDB\xDB\xDB\xDB  \xDB\xDB  \xDB\xDB  \xDB\xDB\xDB\xDB\xDB\xDB  \xDB\xDB\xDB\xDB\xDB\xDB  \xDB\xDB   \xDB\xDB\n"
+			<< "\xDB\xDB      \xDB\xDB   \xDB\xDB  \xDB\xDB  \xDB\xDB      \xDB\xDB  \xDB\xDB      \xDB\xDB   \xDB\xDB\n"
+			<< "\xDB\xDB      \xDB\xDB   \xDB\xDB  \xDF\xDB\xDB\xDB\xDB\xDF  \xDB\xDB\xDB\xDB\xDB\xDB  \xDB\xDB\xDB\xDB\xDB\xDB  \xDB\xDB\xDB\xDB\xDB\xDB\xDF\n"
+			<< "Press any button to continue, q to quit\n";
+		char input;
+		do
+			input = _getch();
+		while(_kbhit());
+		if (input == 'q')
+			quit = true;
 	}
 };
 
 int main() {
 	cGameManager main(30, 15);
-	main.Draw();
-
+	main.Start();
 
 
 	return 0;
