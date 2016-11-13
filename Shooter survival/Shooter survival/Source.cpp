@@ -4,7 +4,7 @@
 #include <chrono>
 #include <conio.h>
 
-#define sleep std::this_thread::sleep_for(std::chrono::milliseconds(50))
+#define sleep std::this_thread::sleep_for(std::chrono::milliseconds(500))
 #include "Weapon.h"
 #include "Entity.h"
 
@@ -58,13 +58,18 @@ public:
 				if (x == player->getX() && y == player->getY())
 					std::cout << '\x9D';
 
+				bool foundBullet = false;
+				
 				// Weapon bullets
 				for (int i = 0; i < weapon->getMaxBullet(); ++i)
-				if (x == weapon->getBulletX(i) && y == weapon->getBulletY(i))
+					if (x == weapon->getBulletX(i) && y == weapon->getBulletY(i)) {
 						std::cout << '0';
-				
-				else 
-					std::cout << ' ';
+						foundBullet = true;
+						break;
+					}
+
+				if (foundBullet == false)
+						std::cout << ' ';
 
 				// Rigth wall
 				if(x == width - 1)
@@ -93,9 +98,7 @@ public:
 			if (current == right)
 				player->ChangeDir(RIGHT);
 
-
-			// Fire weapon
-			
+			// Fire weapon			
 			if (current == shootUp)
 				weapon->Shoot(player->getX(), player->getY(), BULLETUP);
 			if (current == shootDown)
@@ -108,12 +111,9 @@ public:
 			if (current == reload)
 				weapon->Reload();
 			
-			
-
 			// Misc
 			if (current == pause)
 				Pause();
-
 		}
 		else
 			player->ChangeDir(STOP);	
@@ -150,6 +150,8 @@ public:
 			<< "\xDB\xDB      \xDB\xDB   \xDB\xDB  \xDF\xDB\xDB\xDB\xDB\xDF  \xDB\xDB\xDB\xDB\xDB\xDB  \xDB\xDB\xDB\xDB\xDB\xDB  \xDB\xDB\xDB\xDB\xDB\xDB\xDF\n"
 			<< "Press any button to continue, q to quit\n";
 		char input;
+
+		// Pauses game till user input
 		do
 			input = _getch();
 		while(_kbhit());
