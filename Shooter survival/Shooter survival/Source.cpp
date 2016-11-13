@@ -4,11 +4,9 @@
 #include <chrono>
 #include <conio.h>
 
-#define sleep std::this_thread::sleep_for(std::chrono::milliseconds(500))
+#define sleep std::this_thread::sleep_for(std::chrono::milliseconds(100))
 #include "Weapon.h"
 #include "Entity.h"
-
-//#include "Weapon.h"
 
 class cGameManager {
 	int width, heigth;
@@ -30,13 +28,16 @@ public:
 		shootUp = 'i';	shootLeft = 'j';
 		shootDown = 'k'; shootRight = 'l';
 		reload = 'r'; pause = 'p';
+		
 		player = new cPlayer(paramX / 2, paramY / 2);
 		weapon = new cFist(9999,1,1,1,1,'#');
+		quit = false;
+		score = 0;
 	}
 
 	~cGameManager() {
-		delete player;
-		delete[] enemy;
+		delete player, weapon;
+		//delete[] enemy;
 	}
 
 	void Draw() {
@@ -54,22 +55,26 @@ public:
 				if (x == 0)
 					std::cout << '\xDB';
 
-				// Player
-				if (x == player->getX() && y == player->getY())
-					std::cout << '\x9D';
-
 				bool foundBullet = false;
 				
 				// Weapon bullets
 				for (int i = 0; i < weapon->getMaxBullet(); ++i)
 					if (x == weapon->getBulletX(i) && y == weapon->getBulletY(i)) {
-						std::cout << '0';
+						std::cout << 'x' << weapon->getBulletX(i) << 'y' << weapon->getBulletY(i);
+						std::cin.ignore();
 						foundBullet = true;
 						break;
 					}
 
-				if (foundBullet == false)
+				// Player
+				if (foundBullet == false) {
+
+				if (x == player->getX() && y == player->getY())
+					std::cout << '\x9D';
+
+				else
 						std::cout << ' ';
+				}
 
 				// Rigth wall
 				if(x == width - 1)
@@ -82,9 +87,10 @@ public:
 		for (int x = 0; x < width + 2; x++)
 			std::cout << '\xDF';
 
+		// Score and bullets
+		std::cout << "\nAmmo: " << weapon->getAmmo() << '/' << weapon->getMaxAmmo() << "\t\tScore:" << score;
 	}
 	void Input() {
-
 		if (_kbhit()) {
 			char current = _getch();
 
@@ -110,14 +116,13 @@ public:
 
 			if (current == reload)
 				weapon->Reload();
-			
+
 			// Misc
 			if (current == pause)
 				Pause();
+			player->Move();
 		}
-		else
-			player->ChangeDir(STOP);	
-		player->Move();
+		player->ChangeDir(STOP);
 	}
 	void Logic() {
 		// Checks death of enemy
@@ -161,9 +166,12 @@ public:
 };
 
 int main() {
-	cGameManager main(30, 15);
-	main.Start();
-	
+	cBullet *bullet[10];
+	for (int i = 0; i < 10; i++) {
+		int result = ((*(bullet + i))->getActive() ? 1 : 0);
+		std::cout << result << '\n';
+	}
+
 
 	return 0;
 }

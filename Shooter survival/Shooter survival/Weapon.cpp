@@ -86,7 +86,7 @@ void cWeapon::Shoot(int paramX, int paramY, eBulletDir paramDirection)
 {
 	if (ammo != 0) {
 		for (int i = 0; i < maxBullet; i++)
-			if ((bullet + i)->getActive() == false) {
+			if ((bullet+1)->getActive() == false) {
 				(bullet + i)->Generate(paramX, paramY, defaultPace, defaultLive, paramDirection);
 				break;
 			}
@@ -147,6 +147,16 @@ const int cWeapon::getBulletY(int number)
 const char cWeapon::getBulletIcon(int number)
 {
 	return icon;
+}
+
+const int cWeapon::getAmmo()
+{
+	return ammo;
+}
+
+const int cWeapon::getMaxAmmo()
+{
+	return originalAmmo;
 }
 
 int cFist::Damage()

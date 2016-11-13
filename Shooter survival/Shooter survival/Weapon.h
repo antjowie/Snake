@@ -18,11 +18,11 @@ public:
 	void Move();
 	void Reset();
 	
-	const inline int getX();
-	const inline int getY();
-	const inline int getLive();
-	const inline bool getActive();
-	const inline void changeActive(bool newActive);
+	const int getX();
+	const int getY();
+	const int getLive();
+	const bool getActive();
+	const void changeActive(bool newActive);
 
 	};
 
@@ -49,6 +49,8 @@ public:
 	const int getBulletX(int number);
 	const int getBulletY(int number);
 	const char getBulletIcon(int number);
+	const int getAmmo();
+	const int getMaxAmmo();
 
 	virtual int Damage() = 0;
 
