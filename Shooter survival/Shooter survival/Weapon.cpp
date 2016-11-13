@@ -159,12 +159,17 @@ const int cWeapon::getMaxAmmo()
 	return originalAmmo;
 }
 
-int cFist::Damage()
+const int cWeapon::getPace()
+{
+	return defaultPace;
+}
+
+int cHandGun::Damage()
 {
 	return damage;
 
 }
 
-cFist::cFist(int ammoCapacity, int damage, int fireRate, int bulletPace, int paramLive, char paramIcon) :cWeapon(ammoCapacity, damage, fireRate, bulletPace, paramLive, paramIcon)
+cHandGun::cHandGun(int ammoCapacity, int damage, int fireRate, int bulletPace, int paramLive, char paramIcon) :cWeapon(ammoCapacity, damage, fireRate, bulletPace, paramLive, paramIcon)
 {
 }

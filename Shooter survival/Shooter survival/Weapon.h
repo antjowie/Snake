@@ -51,14 +51,15 @@ public:
 	const char getBulletIcon(int number);
 	const int getAmmo();
 	const int getMaxAmmo();
+	const int getPace();
 
 	virtual int Damage() = 0;
 
 };
 
-class cFist :public cWeapon {
+class cHandGun :public cWeapon {
 public:
-	cFist(int ammoCapacity, int damage, int fireRate, int bulletPace , int bulletLive, char paramIcon);
+	cHandGun(int ammoCapacity, int damage, int fireRate, int bulletPace , int bulletLive, char paramIcon);
 	int Damage();
 };
 #endif // !WEAPON_H_INCLUDED

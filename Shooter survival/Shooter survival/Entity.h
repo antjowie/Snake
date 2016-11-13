@@ -10,6 +10,7 @@ protected:
 	int x, y;
 	int originalX, originalY;
 	int HP;
+	int maxEnemy;
 	eStatus status;
 	eEntityDir direction;
 public:

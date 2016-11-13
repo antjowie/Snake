@@ -16,7 +16,7 @@ class cGameManager {
 	cEntity *enemy;
 	cWeapon *weapon;
 	int score;
-	int enemyAmmount;
+	int enemyAmount;
 public:
 	cGameManager(int paramX, int paramY) {
 		srand(time(NULL));
@@ -30,7 +30,7 @@ public:
 		reload = 'r'; pause = 'p';
 		
 		player = new cPlayer(paramX / 2, paramY / 2);
-		weapon = new cFist(9999,1,1,1,1,'#');
+		weapon = new cHandGun(10,1,2,2,5,'\xFA');
 		quit = false;
 		score = 0;
 	}
@@ -126,15 +126,23 @@ public:
 	}
 	void Logic() {
 		// Checks death of enemy
-
+		// Checks bullet pace
+		for (int i = 0; i < weapon->getPace(); i++)
+			// Loops through every bullet
+			for (int j = 0; j < weapon->getMaxBullet(); j++)
+				if (weapon->getBulletState(i) == true)
+					// Loops through every enemy
+					for (int k = 0; k < enemyAmount; k++)
+						if ((enemy + k)->getX() == weapon->getBulletX(i) && (enemy + k)->getY() == weapon->getBulletY(i))
+							(enemy + k)->Reset();
 
 	}
 	void ScoreUp() {
 
 	}
-	void GenerateEnemy(int ammount) {
-		enemy = new cEnemy[ammount];
-		enemyAmmount = ammount;
+	void GenerateEnemy(int amount) {
+		enemy = new cEnemy[amount];
+		enemyAmount = amount;
 	}
 	void Start() {
 		while (!quit) {
@@ -166,12 +174,8 @@ public:
 };
 
 int main() {
-	cBullet *bullet[10];
-	for (int i = 0; i < 10; i++) {
-		int result = ((*(bullet + i))->getActive() ? 1 : 0);
-		std::cout << result << '\n';
-	}
-
+	cGameManager main(30, 15);
+	main.Start();
 
 	return 0;
 }
