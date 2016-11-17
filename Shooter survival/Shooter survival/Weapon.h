@@ -43,23 +43,16 @@ public:
 	void Render();
 	void Kill();
 	void Reload();
+	int Damage();
 
-	const bool getBulletState(int number);
 	const int getMaxBullet();
+	const bool getBulletActive(int number);
 	const int getBulletX(int number);
 	const int getBulletY(int number);
-	const char getBulletIcon(int number);
+	const char getBulletIcon();
 	const int getAmmo();
 	const int getMaxAmmo();
 	const int getPace();
 
-	virtual int Damage() = 0;
-
-};
-
-class cHandGun :public cWeapon {
-public:
-	cHandGun(int ammoCapacity, int damage, int fireRate, int bulletPace , int bulletLive, char paramIcon);
-	int Damage();
 };
 #endif // !WEAPON_H_INCLUDED

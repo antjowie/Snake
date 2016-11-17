@@ -66,13 +66,13 @@ const inline void cBullet::changeActive(bool newActive)
 	active = newActive;
 }
 
-cWeapon::cWeapon(int ammoCapacity, int damage, int paramFireRate, int bulletPace, int paramLive, char paramIcon, int paramMaxBullet = 10)
+cWeapon::cWeapon(int ammoCapacity, int damage, int paramFireRate, int bulletPace, int paramLive, char paramIcon, int paramMaxBullet)
 {
 	ammo = ammoCapacity; originalAmmo = ammoCapacity;
 	fireRate = paramFireRate;
 	defaultPace = bulletPace;
 	defaultLive = paramLive;
-	maxBullet = maxBullet;
+	maxBullet = paramMaxBullet;
 	bullet = new cBullet[10];
 	icon = paramIcon;
 }
@@ -86,7 +86,7 @@ void cWeapon::Shoot(int paramX, int paramY, eBulletDir paramDirection)
 {
 	if (ammo != 0) {
 		for (int i = 0; i < maxBullet; i++)
-			if ((bullet+1)->getActive() == false) {
+			if ((bullet + i)->getActive() == false) {
 				(bullet + i)->Generate(paramX, paramY, defaultPace, defaultLive, paramDirection);
 				break;
 			}
@@ -98,7 +98,7 @@ void cWeapon::Render()
 {
 	for (int i = 0; i < maxBullet; i++)
 		if ((bullet + i)->getActive() == true)
-			(bullet + 1)->Move();
+			(bullet + i)->Move();
 }
 
 void cWeapon::Kill()
@@ -115,9 +115,14 @@ void cWeapon::Reload()
 	ammo = originalAmmo;
 }
 
-const bool cWeapon::getBulletState(int number)
+int cWeapon::Damage()
 {
-	if ((bullet + number) != nullptr)
+	return damage;
+}
+
+const bool cWeapon::getBulletActive(int number)
+{
+	if ((bullet + number)->getActive() == true)
 		return true;
 	else
 		return false;
@@ -144,7 +149,7 @@ const int cWeapon::getBulletY(int number)
 		return 0;
 }
 
-const char cWeapon::getBulletIcon(int number)
+const char cWeapon::getBulletIcon()
 {
 	return icon;
 }
@@ -162,14 +167,4 @@ const int cWeapon::getMaxAmmo()
 const int cWeapon::getPace()
 {
 	return defaultPace;
-}
-
-int cHandGun::Damage()
-{
-	return damage;
-
-}
-
-cHandGun::cHandGun(int ammoCapacity, int damage, int fireRate, int bulletPace, int paramLive, char paramIcon) :cWeapon(ammoCapacity, damage, fireRate, bulletPace, paramLive, paramIcon)
-{
 }

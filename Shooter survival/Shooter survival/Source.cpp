@@ -8,6 +8,12 @@
 #include "Weapon.h"
 #include "Entity.h"
 
+/* 
+Weapon list
+ammoCapacity, damage, fireRate, bulletPace, paramLive, paramIcon, paramMaxBullet
+*/
+cWeapon HandGun(10, 1, 3, 1, 5, '\xFA', 3);
+
 class cGameManager {
 	int width, heigth;
 	char up, down, left, right, shootUp, shootDown, shootLeft, shootRight, reload, pause;
@@ -30,7 +36,7 @@ public:
 		reload = 'r'; pause = 'p';
 		
 		player = new cPlayer(paramX / 2, paramY / 2);
-		weapon = new cHandGun(10,1,2,2,5,'\xFA');
+		weapon = &HandGun;
 		quit = false;
 		score = 0;
 	}
@@ -44,7 +50,7 @@ public:
 		system("cls");
 
 		// Upper wall
-		for (int x = 0; x < width+2; x++)
+		for (int x = 0; x < width + 2; x++)
 			std::cout << '\xDC';
 		std::cout << '\n';
 
@@ -59,9 +65,8 @@ public:
 				
 				// Weapon bullets
 				for (int i = 0; i < weapon->getMaxBullet(); ++i)
-					if (x == weapon->getBulletX(i) && y == weapon->getBulletY(i)) {
-						std::cout << 'x' << weapon->getBulletX(i) << 'y' << weapon->getBulletY(i);
-						std::cin.ignore();
+					if (x == weapon->getBulletX(i) && y == weapon->getBulletY(i) && weapon->getBulletActive(i)== true) {
+						std::cout << weapon->getBulletIcon();
 						foundBullet = true;
 						break;
 					}
@@ -105,14 +110,18 @@ public:
 				player->ChangeDir(RIGHT);
 
 			// Fire weapon			
-			if (current == shootUp)
-				weapon->Shoot(player->getX(), player->getY(), BULLETUP);
-			if (current == shootDown)
-				weapon->Shoot(player->getX(), player->getY(), BULLETDOWN);
-			if (current == shootLeft)
-				weapon->Shoot(player->getX(), player->getY(), BULLETLEFT);
-			if (current == shootRight)
-				weapon->Shoot(player->getX(), player->getY(), BULLETRIGHT);
+			if (weapon->getAmmo() != 0) {
+				if (current == shootUp)
+					weapon->Shoot(player->getX(), player->getY(), BULLETUP);
+				if (current == shootDown)
+					weapon->Shoot(player->getX(), player->getY(), BULLETDOWN);
+				if (current == shootLeft)
+					weapon->Shoot(player->getX(), player->getY(), BULLETLEFT);
+				if (current == shootRight)
+					weapon->Shoot(player->getX(), player->getY(), BULLETRIGHT);
+			}
+			else
+				std::cout << '\a';
 
 			if (current == reload)
 				weapon->Reload();
@@ -125,16 +134,22 @@ public:
 		player->ChangeDir(STOP);
 	}
 	void Logic() {
+
 		// Checks death of enemy
 		// Checks bullet pace
-		for (int i = 0; i < weapon->getPace(); i++)
+		for (int i = 0; i < weapon->getPace(); i++) {
+		weapon->Render();
 			// Loops through every bullet
 			for (int j = 0; j < weapon->getMaxBullet(); j++)
-				if (weapon->getBulletState(i) == true)
+				if (weapon->getBulletActive(j) == true)
 					// Loops through every enemy
 					for (int k = 0; k < enemyAmount; k++)
-						if ((enemy + k)->getX() == weapon->getBulletX(i) && (enemy + k)->getY() == weapon->getBulletY(i))
+						if ((enemy + k)->getX() == weapon->getBulletX(j) && (enemy + k)->getY() == weapon->getBulletY(j))
 							(enemy + k)->Reset();
+		}
+
+		// Kills bullets that have reached the end of their live
+		weapon->Kill();
 
 	}
 	void ScoreUp() {
