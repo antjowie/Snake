@@ -39,11 +39,17 @@ public:
 		weapon = &HandGun;
 		quit = false;
 		score = 0;
+
+		enemyAmount = 1;
+		enemy = new cEnemy[enemyAmount];
+		(enemy + 0)->insertX(2);
+		(enemy + 0)->insertY(2);
+
 	}
 
 	~cGameManager() {
 		delete player, weapon;
-		//delete[] enemy;
+		delete[] enemy;
 	}
 
 	void Draw() {
@@ -71,20 +77,30 @@ public:
 						break;
 					}
 
-				// Player
 				if (foundBullet == false) {
+					bool foundEnemy = false;
 
+				// Enemy
+					for (int i = 0; i < enemyAmount; i++)
+						if ((enemy + i)->getX() == x && (enemy + i)->getY() == y && (enemy + i)->getAlive() == true) {
+							std::cout << 'E';
+							foundEnemy = true;
+							break;
+						}
+
+				// Player
+					if (foundEnemy == false) {
 				if (x == player->getX() && y == player->getY())
 					std::cout << '\x9D';
-
+				
 				else
 						std::cout << ' ';
+					}
 				}
 
 				// Rigth wall
 				if(x == width - 1)
 					std::cout << '\xDB';
-
 			}
 			std::cout << '\n';
 		}
@@ -148,6 +164,11 @@ public:
 							(enemy + k)->Reset();
 		}
 
+		// Moves enemy
+		for (int i = 0; i < enemyAmount; i++) {
+			(enemy + i)->ChangeDir(player);
+			(enemy + i)->Move();
+		}
 		// Kills bullets that have reached the end of their live
 		weapon->Kill();
 

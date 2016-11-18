@@ -6,7 +6,7 @@ cEntity::cEntity(int paramX, int paramY)
 	originalX = paramX; originalY = paramY;
 	direction = STOP;
 	HP = 3;
-	status = ALIVE;
+	alive = true;
 }
 
 cEntity::cEntity()
@@ -39,30 +39,43 @@ void cEntity::ChangeDir(cEntity * player)
 
 void cEntity::Move()
 {
-	switch (direction)
-	{
-	case STOP:
-		break;
-	case UP:
-		y--;
-		break;
-	case DOWN:
-		y++;
-		break;
-	case LEFT:
-		x--;
-		break;
-	case RIGHT:
-		x++;
-		break;
-	default:
-		break;
-	}
+	if (cooldown == 0)
+		switch (direction)
+		{
+		case STOP:
+			break;
+		case UP:
+			y--;
+			break;
+		case DOWN:
+			y++;
+			break;
+		case LEFT:
+			x--;
+			break;
+		case RIGHT:
+			x++;
+			break;
+		default:
+			break;
+		}
+	else
+		--cooldown;
 }
 
 void cEntity::LowerHP()
 {
 	HP--;
+}
+
+const void cEntity::insertX(int paramX)
+{
+	x = paramX;
+}
+
+const void cEntity::insertY(int paramY)
+{
+	y = paramY;
 }
 
 const inline int cEntity::getX()
@@ -80,9 +93,14 @@ const inline int cEntity::getHP()
 	return HP;
 }
 
-eEntityDir cEntity::getDir()
+const eEntityDir cEntity::getDir()
 {
 	return direction;
+}
+
+const bool cEntity::getAlive()
+{
+	return alive;
 }
 
 cPlayer::cPlayer(int paramX, int paramY) : cEntity(paramX, paramY)
@@ -97,9 +115,11 @@ void cPlayer::Reset()
 cEnemy::cEnemy()
 {
 	HP = 1;
+	alive = true;
+	cooldown = 2;
 }
 
 void cEnemy::Reset()
 {
-	status = DEAD;
+	alive = false;
 }

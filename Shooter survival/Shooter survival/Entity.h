@@ -3,7 +3,6 @@
 #define ENTITY_H_INCLUDED
 
 enum eEntityDir { STOP, UP, DOWN, LEFT, RIGHT };
-enum eStatus { DEAD, ALIVE };
 
 class cEntity {
 protected:
@@ -11,7 +10,8 @@ protected:
 	int originalX, originalY;
 	int HP;
 	int maxEnemy;
-	eStatus status;
+	int cooldown;
+	bool alive;
 	eEntityDir direction;
 public:
 	cEntity(int paramX, int paramY);
@@ -25,10 +25,13 @@ public:
 	virtual void Reset() = 0;
 
 	// Get functions
+	const void insertX(int paramX);
+	const void insertY(int paramY);
 	const inline int getX();
 	const inline int getY();
 	const inline int getHP();
-	eEntityDir getDir();
+	const eEntityDir getDir();
+	const bool getAlive();
 };
 
 class cPlayer : public cEntity {
